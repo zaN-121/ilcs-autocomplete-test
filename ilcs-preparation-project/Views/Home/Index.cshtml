@@ -1,0 +1,202 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+        #container { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-content: center;
+            width: 50%;
+            margin: auto;
+        }
+</style>
+
+<div id="container">
+    
+    <figure class="text-center">
+        <blockquote class="blockquote">
+            <h4>ILCS Autocomplete Form Test</h4>
+        </blockquote>
+        <figcaption class="blockquote-footer">
+            coded by <cite title="Source Title">ahmad nazir arrobi</cite>
+        </figcaption>
+    </figure>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Negara</span>
+        <input id="neg" type="text" class="form-control" placeholder="..." aria-label="Negara" aria-describedby="basic-addon1">
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Pelabuhan</span>
+        <input id="pelabuhan" type="text" class="form-control" placeholder="..." aria-label="Pelabuhan" aria-describedby="basic-addon1">
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">Barang</span>
+        <input id="brgid" type="text" class="form-control" placeholder="..." aria-label="Barang" aria-describedby="basic-addon1">
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">Deskripsi</span>
+        <textarea id="barang" disabled class="form-control" aria-label="With textarea"></textarea>
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">Harga Rp.</span>
+        <input id="harga" type="number" class="form-control" placeholder="0" aria-label="Amount (to the nearest dollar)">
+        @* <span class="input-group-text">,00</span> *@
+    </div>
+
+    <div class="input-group mb-3">
+        <span class="input-group-text">Tarif Bea Masuk</span>
+        <input id="tbm" disabled="true" type="number" placeholder="0" class="form-control" aria-label="Amount (to the nearest dollar)">
+        <span class="input-group-text">%</span>
+    </div>
+    
+    <div class="input-group mb-3">
+        <span class="input-group-text">TMB Rp.</span>
+        <input id="hxtmb" disabled="true" type="number" placeholder="0" class="form-control" aria-label="Amount (to the nearest dollar)">
+        @* <span class="input-group-text">,00</span> *@
+    </div>
+    
+    <!-- Button Thanks modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        Thanks
+    </button>
+    
+    <!-- Modal Thanks -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Thanks</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+            <div class="modal-body">
+                <script src="https://unpkg.com/@@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+                <lottie-player src="https://assets4.lottiefiles.com/packages/lf20_iux6ajkg.json"  background="transparent"  speed="1"  style=" margin:auto; width: 90%; height: 80%;"  loop autoplay></lottie-player>
+            </div>
+            <h3 style="margin:auto">for giving me a chance</h3>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+ 
+    @section Scripts {
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css"/>
+        <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+        <script>
+            // negara
+            $(function () {
+                $("#neg").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "https://insw-dev.ilcs.co.id/n/negara?",
+                            type: "GET",
+                            dataType: "json",
+                            data: { ur_negara: request.term },
+                            success: function (data) {
+                                response($.map(data.data, function (item) {
+                                    return { label: item.ur_negara, value: item.kd_negara };
+                                }));
+                            },
+                            
+                        });
+                    },
+                    minLength: 3,
+                    select: function (event, ui) {
+                        $("#neg").val(ui.item.label);
+                        $("#neg").attr("data-id", ui.item.value);
+                        console.log(ui.item ? "Selected: " + ui.item.label : "Nothing selected, input was " + this.value);
+                        return false
+                    }
+                });
+            });
+            
+            // pelabuhan
+             $(function () {
+                 
+                $("#pelabuhan").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "https://insw-dev.ilcs.co.id/n/pelabuhan?"+"kd_negara="+$('#neg').attr("data-id")+"&",
+                            type: "GET",
+                            dataType: "json",
+                            data: { ur_pelabuhan: request.term },
+                            success: function (data) {
+                                response($.map(data.data, function (item) {
+                                     return { label: item.ur_pelabuhan, value: item.kd_pelabuhan };
+                                }));
+                            },
+                                        
+                        });
+                    },
+                    minLength: 3,
+                    select: function (event, ui) {
+                        $("#pelabuhan").val(ui.item.label);
+                        $("#pelabuhan").attr("data-id", ui.item.value);
+                        console.log(ui.item ? "Selected: " + ui.item.label : "Nothing selected, input was " + this.value);
+                        return false
+                        }
+                    });
+             });
+             
+             // barang
+              $(function () {
+                      $('#brgid').on('input', function () {
+                          var value = $(this).val();
+                          if (value) {
+                              $.ajax({
+                                  url: "https://insw-dev.ilcs.co.id/n/barang?",
+                                  type: "GET",
+                                  data: { hs_code: value },
+                                  dataType: "json",
+                                  success: function (data) {
+                                      $("#barang").text(data.data[0].sub_header + data.data[0].uraian_id)
+
+                                  },
+                                  error: function (xhr, status, error) {
+                                      $("#barang").text("")
+                                  }
+                              });
+                          }
+                      });
+                  });      
+              
+              // tarif bea masuk
+              $(function () {
+                      $('#brgid').on('input', function () {
+                          var value = $(this).val();
+                          if (value) {
+                              $.ajax({
+                                  url: "https://insw-dev.ilcs.co.id/n/tarif?",
+                                  type: "GET",
+                                  data: { hs_code: value },
+                                  dataType: "json",
+                                  success: function (data) {
+                                      $("#tbm").val(data.data[0].bm)
+                                  },
+                                  error: function (xhr, status, error) {
+                                      $("#tbm").val(0)
+                                  }
+                              });
+                          }
+                      });
+                  });    
+              
+              // harga * tarif bea masuk
+              $(function () {
+                  $("#harga").on('input', function () {
+                       $("#hxtmb").val(($("#harga").val() * $("#tbm").val()) / 100)                   
+                  })
+              })
+        </script>
+    }
+
+</div>
